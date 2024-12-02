@@ -22,13 +22,13 @@ def sortApps(totalApps, item):
         elem = app[item]
         if item == "position" or item == "company" or item == "location":
             elem = elem.strip()
-        if freq[elem]:
+        if elem in freq:
             freq[elem] += 1
         else:
             freq[elem] = 1
     freqKeyVals = list(freq.items())
-    sortedFreqs = freqKeyVals.sorted(key=lambda x: x[1])
-    return sortedFreqs
+    freqKeyVals.sort(key=lambda x: x[1])
+    return freqKeyVals
 
 
 def countApps(totalApps, key, val):
@@ -42,16 +42,23 @@ def countApps(totalApps, key, val):
 
 @app.route('/statistics', methods=['POST'])
 @cross_origin()
-def get_statistics():
+def post_statistics():
     data = request.get_json()
-    return jsonify({
-        "Applications": len(data),
-        "OA": countApps(data, 'online-assessment', True),
-        "Interview": countApps(data, 'interview-round', True),
-        "Company": sortApps(data, 'company'),
-        "Position": sortApps(data, 'position'),
-        "Location": sortApps(data, 'location')
-    })
+    print(data)
+    if data:
+        print(data)
+        response = {
+                "Applications": len(data),
+                "OA": countApps(data, 'online-assessment', True),
+                "Interview": countApps(data, 'interview-round', True),
+                "Company": sortApps(data, 'company'),
+                "Position": sortApps(data, 'position'),
+                "Location": sortApps(data, 'location')
+            }
+        print(response)
+        return jsonify(response)
+    else:
+        return jsonify({'No data to provide.': 1})
 
 
 @app.route('/')
